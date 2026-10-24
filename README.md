@@ -10,28 +10,48 @@ An in-memory, menu-driven student record manager for the terminal, written in pu
 
 ## Overview
 
-Student records live as structs in heap-allocated nodes of a singly linked list. There is no database library and no file I/O: all data stays in memory for the duration of the session, and every operation (insert, search, display) is implemented by hand.
+Each student record is a `struct` stored in a heap-allocated node of a singly linked list. There is no database library and no file I/O: data lives in memory for the duration of the session, and every operation (insert, search, display) is implemented by hand.
 
 ## Features
 
-- **Insert** a student record (roll number, name, course, marks)
+- **Insert** a record with roll number, name, age, gender, course, marks, and email
 - **Search** by:
   - Roll number
   - Name
   - Course
   - Marks range
 - **Display** all records
-- Interactive menu loop driven from `main()`
+- Menu-driven interface that loops until you choose Exit
+
+## Menu
+
+```
+--- Student Database Menu ---
+1. Insert Record
+2. Search by roll number
+3. Search by name
+4. Search by course
+5. Search by marks range
+6. Display all records
+7. Exit
+```
 
 ## Design
 
 | Component | Implementation | Complexity |
 |:---|:---|:---:|
-| Record node | Struct with `roll_no`, `name[50]`, `course[50]`, `marks`, and a `next` pointer | n/a |
-| Allocation | One heap-allocated node per record | O(1) per insert |
-| Insertion | Prepend at the list head (`newStudent->next = head; head = newStudent;`) | O(1) |
-| Search | Linear traversal of the list (roll number, name, course, marks range) | O(n) |
+| Record node | `struct student` with `roll`, `name[50]`, `age`, `gender`, `course[50]`, `marks` (float), `email[50]`, and a `next` pointer | n/a |
+| Allocation | One `malloc` per record | O(1) per insert |
+| Insertion | Prepend at the list head (`newnode->next = head; head = newnode;`) | O(1) |
+| Search | Linear traversal of the list | O(n) |
 | Display | Linear traversal, printing each record | O(n) |
+
+### Behavior notes
+
+- Because insertion prepends, records are displayed **newest first**.
+- Search by roll number stops at the **first match**; search by name, course, and marks range prints **every match**.
+- Name and course matching use `strcmp`, so they are **exact and case-sensitive**.
+- The marks range is **inclusive** on both ends.
 
 ## Build and Run
 
@@ -53,10 +73,13 @@ Student-db-engine/
 ## Limitations
 
 - Records are held in memory only, so data is lost when the program exits.
-- Searches are linear scans; lookups are O(n) as the list grows.
+- Nodes are not explicitly freed; memory is reclaimed by the OS when the program exits.
+- Input is not validated (return values of `scanf` are unchecked, and duplicate roll numbers are allowed).
 
 ## Possible Extensions
 
-- Update and delete operations
+- Update and delete operations, with proper `free` of removed nodes
+- Input validation and duplicate roll number checks
 - Persistence by saving and loading records from a file
 - Sorting records by marks or name
+ye le sorry ye ai kahi ka
